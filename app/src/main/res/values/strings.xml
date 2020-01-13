@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Savepoint</string>
     <string name="test_game_name">Fun Game</string>
+
     <string name="settings_menu_item">Settings</string>
+    <string name="about_menu_item">About</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,18 +1,31 @@
 package io.github.wertylop5
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 
-class GameMainActivity : AppCompatActivity() {
+class GameMainActivity : AppCompatActivity(), EntryListFragment.OnFragmentInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        //allow the Toolbar to be updated when navigation destination changes
+        val navController: NavController = findNavController(R.id.nav_host_fragment)
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        findViewById<Toolbar>(R.id.toolbar)
+            .setupWithNavController(navController,
+                findViewById<DrawerLayout>(R.id.game_main_drawer_layout))
 
     }
 
@@ -24,5 +37,9 @@ class GameMainActivity : AppCompatActivity() {
 
     fun onGroupItemClick(item: MenuItem) {
 
+    }
+
+    override fun onFragmentInteraction(uri: Uri) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
