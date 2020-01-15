@@ -1,7 +1,5 @@
 package io.github.wertylop5
 
-import android.content.Intent
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -13,7 +11,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 
-class GameMainActivity : AppCompatActivity(), EntryListFragment.OnFragmentInteractionListener {
+class GameMainActivity : AppCompatActivity(), EntryListFragment.OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +37,7 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnFragmentIntera
 
     }
 
-    override fun onFragmentInteraction(uri: Uri) {
+    override fun onItemClick() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
