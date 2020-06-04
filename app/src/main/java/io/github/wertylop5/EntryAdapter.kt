@@ -23,6 +23,7 @@ class EntryAdapter(private val entries: List<Entry>) : RecyclerView.Adapter<Entr
         when (val data = entries[position]) {
             is NoteEntry -> {
                 holder.entryTitle.text = data.title
+                holder.entryImage.setImageURI(null)
                 holder.entryDescription.text = data.description
             }
             is PictureEntry -> {
@@ -46,6 +47,7 @@ class EntryAdapter(private val entries: List<Entry>) : RecyclerView.Adapter<Entr
         val layout =
             inflater.inflate(R.layout.entry_generic, parent, false) as LinearLayout
 
+        //Save references to each view, because findViewById is expensive
         val entryTitle = layout.findViewById<TextView>(R.id.entry_title)
         val entryImage = layout.findViewById<ImageView>(R.id.entry_image)
         val entryDescription = layout.findViewById<TextView>(R.id.entry_description)

@@ -2,6 +2,7 @@ package io.github.wertylop5
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,34 +10,46 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+private const val TAG = "EntryListFragment"
+
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [EntryListFragment.OnItemClickListener] interface
+ * [EntryListFragment.OnEntryClickListener] interface
  * to handle interaction events.
  * Use the [EntryListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
 class EntryListFragment : Fragment() {
-    private var listener: OnItemClickListener? = null
+    private var entryClickListener: OnEntryClickListener? = null
+    private var createFragListener: OnCreateFragListener? = null
+    private var TAG: String = EntryListFragment.javaClass.name
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
 
+    private var entries: MutableList<Entry> = ArrayList()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = context as? OnItemClickListener
+        entryClickListener = context as? OnEntryClickListener
+        createFragListener = context as? OnCreateFragListener
 
-        if (listener == null) {
+        if (entryClickListener == null) {
             throw ClassCastException("$context must implement OnItemClickListener")
+        }
+
+        if (createFragListener == null) {
+            throw ClassCastException("$context must implement OnCreateFragListener")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
+        Log.d(TAG, "created")
+        createFragListener?.onCreateFrag();
     }
 
     override fun onCreateView(
@@ -47,7 +60,7 @@ class EntryListFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_entry_list, container, false)
 
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = EntryAdapter(listOf(NoteEntry(title="big title", description = "Test")))
+        viewAdapter = EntryAdapter(entries)
         recyclerView = rootView.findViewById<RecyclerView>(R.id.main_recycler_view).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
@@ -63,11 +76,19 @@ class EntryListFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-        listener = null
+        entryClickListener = null
     }
 
-    interface OnItemClickListener {
-        fun onItemClick()
+    fun initEntryList(entries: MutableList<Entry>) {
+        this.entries.addAll(0, entries)
+    }
+
+    interface OnEntryClickListener {
+        fun onEntryClick()
+    }
+
+    interface OnCreateFragListener {
+        fun onCreateFrag()
     }
 
     companion object {

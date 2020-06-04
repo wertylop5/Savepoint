@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CreateNoteActivity">
+
+    <TextView
+        android:id="@+id/create_note_title_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_note_title"
+        android:labelFor="@id/create_note_title_edittext"/>
+
+    <EditText
+        android:id="@+id/create_note_title_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"/>
+
+    <TextView
+        android:id="@+id/create_note_desc_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_note_desc"
+        android:labelFor="@id/create_note_desc_edittext"/>
+
+    <EditText
+        android:id="@+id/create_note_desc_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_note_info"
+        android:labelFor="@id/note_add_info_button"/>
+
+    <Button
+        android:id="@+id/note_add_info_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_note_add_info"/>
+
+    <Button
+        android:id="@+id/note_create_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create"/>
+
+</LinearLayout>
