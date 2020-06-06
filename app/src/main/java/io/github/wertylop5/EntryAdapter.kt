@@ -1,5 +1,6 @@
 package io.github.wertylop5
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -7,7 +8,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class EntryAdapter(private val entries: List<Entry>) : RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
+class EntryAdapter() : RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
+
+    private var entries: List<Entry> = emptyList()
 
     class EntryViewHolder(
         val layout: LinearLayout,
@@ -26,15 +29,15 @@ class EntryAdapter(private val entries: List<Entry>) : RecyclerView.Adapter<Entr
                 holder.entryImage.setImageURI(null)
                 holder.entryDescription.text = data.description
             }
-            is PictureEntry -> {
-                holder.entryTitle.text = data.title
-                holder.entryImage.setImageURI(data.picture.uri)
-                holder.entryDescription.text = data.description
+            is PictureEntryWithPhoto -> {
+                holder.entryTitle.text = data.pictureEntry.title
+                holder.entryImage.setImageURI(Uri.parse(data.picture?.uri))
+                holder.entryDescription.text = data.pictureEntry.description
             }
-            is MilestoneEntry -> {
-                holder.entryTitle.text = data.name
-                holder.entryImage.setImageURI(data.picture?.uri)
-                holder.entryDescription.text = data.description
+            is MilestoneEntryWithPhoto -> {
+                holder.entryTitle.text = data.milestoneEntry.name
+                holder.entryImage.setImageURI(Uri.parse(data.picture?.uri))
+                holder.entryDescription.text = data.milestoneEntry.description
             }
             else -> {
                 throw ClassCastException("Class is not a valid Entry type")
@@ -53,5 +56,12 @@ class EntryAdapter(private val entries: List<Entry>) : RecyclerView.Adapter<Entr
         val entryDescription = layout.findViewById<TextView>(R.id.entry_description)
 
         return EntryViewHolder(layout, entryTitle, entryImage, entryDescription)
+    }
+
+    fun setEntries(l: List<Entry>) {
+        entries = l
+
+        //necessary for observers
+        notifyDataSetChanged()
     }
 }

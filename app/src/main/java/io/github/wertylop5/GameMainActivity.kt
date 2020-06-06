@@ -42,29 +42,7 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
             val intent = Intent(this, CreateNoteActivity::class.java)
             startActivity(intent)
         }
-
-
-
-        var db = AppDatabase.getInstance(applicationContext)
-        var dao = db.noteEntryDao()
-
-        var data = dao.getAll()
-        if (data.isEmpty()) {
-
-            //create test data
-            entryList = ArrayList()
-            for (x in 0..20) {
-                entryList.add(NoteEntry(
-                    title="big title",
-                    description = "Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x"))
-            }
-
-            dao.insertNoteEntries(entryList)
-        }
-
-
         //add test data to db if it doesn't already exist
-
 
         /*
         TODO figure out how to initilize the fragment with data, maybe have the fragment
