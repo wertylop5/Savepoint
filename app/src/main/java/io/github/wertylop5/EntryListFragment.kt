@@ -7,12 +7,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-private const val TAG = "EntryListFragment"
 
 /**
  * A simple [Fragment] subclass.
@@ -24,8 +23,7 @@ private const val TAG = "EntryListFragment"
  */
 class EntryListFragment : Fragment() {
     private var entryClickListener: OnEntryClickListener? = null
-    private var createFragListener: OnCreateFragListener? = null
-    private var TAG: String = EntryListFragment.javaClass.name
+    private var TAG: String = EntryListFragment::class.java.name
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -36,14 +34,9 @@ class EntryListFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         entryClickListener = context as? OnEntryClickListener
-        createFragListener = context as? OnCreateFragListener
 
         if (entryClickListener == null) {
             throw ClassCastException("$context must implement OnItemClickListener")
-        }
-
-        if (createFragListener == null) {
-            throw ClassCastException("$context must implement OnCreateFragListener")
         }
     }
 
@@ -51,7 +44,6 @@ class EntryListFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         Log.d(TAG, "created")
-        createFragListener?.onCreateFrag()
     }
 
     override fun onCreateView(
@@ -66,12 +58,15 @@ class EntryListFragment : Fragment() {
         recyclerView = rootView.findViewById<RecyclerView>(R.id.main_recycler_view).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
-            this.adapter = viewAdapter
+            adapter = viewAdapter
         }
 
         viewModel = ViewModelProvider(this).get(NoteEntryViewModel::class.java)
         viewModel.noteEntries.observe(viewLifecycleOwner, Observer {
-            it?.let { viewAdapter.setEntries(it) }
+            it?.let {
+                //causes "it" to no longer be a platform type
+                viewAdapter.setEntries(it)
+            }
         })
 
         return rootView
@@ -86,16 +81,8 @@ class EntryListFragment : Fragment() {
         entryClickListener = null
     }
 
-    /*fun initEntryList(entries: MutableList<Entry>) {
-        this.entries.addAll(0, entries)
-    }*/
-
     interface OnEntryClickListener {
         fun onEntryClick()
-    }
-
-    interface OnCreateFragListener {
-        fun onCreateFrag()
     }
 
     companion object {

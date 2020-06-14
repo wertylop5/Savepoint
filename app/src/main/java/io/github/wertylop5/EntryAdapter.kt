@@ -8,7 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class EntryAdapter() : RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
+class EntryAdapter: RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
 
     private var entries: List<Entry> = emptyList()
 

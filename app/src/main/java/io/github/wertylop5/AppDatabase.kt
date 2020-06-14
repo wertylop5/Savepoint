@@ -31,7 +31,7 @@ abstract class AppDatabase: RoomDatabase() {
         suspend fun populateDatabase(dao: NoteEntryDao) {
             dao.deleteAll()
 
-            var entryList = ArrayList<NoteEntry>()
+            val entryList = ArrayList<NoteEntry>()
             for (x in 0..20) {
                 entryList.add(NoteEntry(
                     title="big title",

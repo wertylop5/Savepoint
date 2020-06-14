@@ -18,8 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 
-class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickListener,
-    EntryListFragment.OnCreateFragListener{
+class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickListener {
     private lateinit var entryList: MutableList<Entry>
     private var TAG: String = javaClass.simpleName
 
@@ -42,18 +41,6 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
             val intent = Intent(this, CreateNoteActivity::class.java)
             startActivity(intent)
         }
-        //add test data to db if it doesn't already exist
-
-        /*
-        TODO figure out how to initilize the fragment with data, maybe have the fragment
-            implement either Serializable or Parcelable
-            https://developer.android.com/guide/navigation/navigation-pass-data
-         */
-        //add the data to the fragments
-        //val entryListFrag = supportFragmentManager.findFragmentById(R.id.entry_list_fragment) as? EntryListFragment
-        //val entryListFrag = navController.graph.get(R.id.entry_list_fragment)
-        //Log.d(TAG, entryListFrag.toString())
-        //entryListFrag?.initEntryList(entryList)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -68,10 +55,5 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
 
     override fun onEntryClick() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onCreateFrag() {
-        val frag = supportFragmentManager.findFragmentById(R.id.entry_list_fragment)
-        Log.d(TAG, frag.toString())
     }
 }
