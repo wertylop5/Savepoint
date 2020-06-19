@@ -1,6 +1,5 @@
-package io.github.wertylop5
+package io.github.wertylop5.model
 
-import android.net.Uri
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,12 +1,11 @@
-package io.github.wertylop5
+package io.github.wertylop5.model
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class CreateNoteViewModel: ViewModel() {
-    private val TAG: String = CreateNoteViewModel::class.java.name
+class CreateEntryViewModel: ViewModel() {
+    private val TAG: String = CreateEntryViewModel::class.java.name
 
     val listOfInfo: MutableLiveData<MutableList<Info>> = MutableLiveData<MutableList<Info>>()
 

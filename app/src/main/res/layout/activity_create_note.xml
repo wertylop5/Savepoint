@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".CreateNoteActivity">
+    tools:context=".CreateEntryActivity">
 
     <TextView
         android:id="@+id/create_note_title_textview"

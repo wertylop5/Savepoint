@@ -7,11 +7,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.github.wertylop5.model.EntryViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -29,7 +29,7 @@ class EntryListFragment : Fragment() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var viewAdapter: EntryAdapter//RecyclerView.Adapter<*>
 
-    private lateinit var viewModel: NoteEntryViewModel
+    private lateinit var viewModel: EntryViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -61,7 +61,7 @@ class EntryListFragment : Fragment() {
             adapter = viewAdapter
         }
 
-        viewModel = ViewModelProvider(this).get(NoteEntryViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(EntryViewModel::class.java)
         viewModel.noteEntries.observe(viewLifecycleOwner, Observer {
             it?.let {
                 //causes "it" to no longer be a platform type

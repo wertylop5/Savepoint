@@ -7,6 +7,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import io.github.wertylop5.model.Entry
+import io.github.wertylop5.model.MilestoneEntryWithPhoto
+import io.github.wertylop5.model.NoteEntry
+import io.github.wertylop5.model.PictureEntryWithPhoto
 
 class EntryAdapter: RecyclerView.Adapter<EntryAdapter.EntryViewHolder>() {
 

@@ -8,19 +8,46 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.get
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
+import io.github.wertylop5.model.AppDatabase
+import io.github.wertylop5.model.Entry
+import io.github.wertylop5.model.EntryRepository
+import io.github.wertylop5.model.NoteEntry
+import kotlinx.coroutines.launch
 
 class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickListener {
     private lateinit var entryList: MutableList<Entry>
     private var TAG: String = javaClass.simpleName
+
+
+    companion object {
+        var EXISTING_ENTRY: String = "io.github.wertylop5.EXISTING_ENTRY"
+    }
+
+    //have to split it, otherwise packageName property is not accessible
+//    init {
+//        EXISTING_ENTRY = "$packageName.EXISTING_ENTRY"
+//    }
+
+    val addNewEntry = registerForActivityResult(CreateEntryContract()) {
+        val repository: EntryRepository  = EntryRepository(
+            AppDatabase.getInstance(this, lifecycleScope).noteEntryDao())
+
+        it?.let {
+            Log.d(TAG, "adding new entry to db")
+            when (it) {
+                is NoteEntry -> lifecycleScope.launch {
+                    repository.insert(it)
+                }
+                else -> null
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +65,8 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
 
         val fab: FloatingActionButton = findViewById(R.id.add_entry_button)
         fab.setOnClickListener { view ->
-            val intent = Intent(this, CreateNoteActivity::class.java)
-            startActivity(intent)
+            //val intent = Intent(this, CreateEntryActivity::class.java)
+            addNewEntry.launch(null)
         }
     }
 

@@ -1,8 +1,8 @@
-package io.github.wertylop5
+package io.github.wertylop5.model
 
 import androidx.lifecycle.LiveData
 
-class NoteEntryRepository(private val dao: NoteEntryDao) {
+class EntryRepository(private val dao: NoteEntryDao) {
     val noteEntries: LiveData<List<NoteEntry>> = dao.getAllNoInfo()
 
     suspend fun insert(note: NoteEntry) {

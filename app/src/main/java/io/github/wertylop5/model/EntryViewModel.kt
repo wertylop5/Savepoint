@@ -1,4 +1,4 @@
-package io.github.wertylop5
+package io.github.wertylop5.model
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,14 +6,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class NoteEntryViewModel(application: Application): AndroidViewModel(application) {
-    private val repository: NoteEntryRepository
+class EntryViewModel(application: Application): AndroidViewModel(application) {
+    private val repository: EntryRepository
 
     val noteEntries: LiveData<List<NoteEntry>>
 
     init {
         val noteEntryDao = AppDatabase.getInstance(application, viewModelScope).noteEntryDao()
-        repository = NoteEntryRepository(noteEntryDao)
+        repository = EntryRepository(noteEntryDao)
         noteEntries = repository.noteEntries
     }
 

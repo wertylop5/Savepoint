@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import io.github.wertylop5.model.Info
 
 class InfoAdapter: RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
     private var infoElems: List<Info> = emptyList()

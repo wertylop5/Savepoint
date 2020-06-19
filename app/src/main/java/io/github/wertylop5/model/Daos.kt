@@ -1,4 +1,4 @@
-package io.github.wertylop5
+package io.github.wertylop5.model
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

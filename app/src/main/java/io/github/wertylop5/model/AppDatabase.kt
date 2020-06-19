@@ -1,4 +1,4 @@
-package io.github.wertylop5
+package io.github.wertylop5.model
 
 import android.content.Context
 import androidx.room.Database
@@ -33,9 +33,12 @@ abstract class AppDatabase: RoomDatabase() {
 
             val entryList = ArrayList<NoteEntry>()
             for (x in 0..20) {
-                entryList.add(NoteEntry(
-                    title="big title",
-                    description = "Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x"))
+                entryList.add(
+                    NoteEntry(
+                        title = "big title",
+                        description = "Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x Test$x"
+                    )
+                )
             }
 
             dao.insertNoteEntries(entryList)
@@ -51,7 +54,11 @@ abstract class AppDatabase: RoomDatabase() {
                 DB_INSTANCE = Room.databaseBuilder(
                     context,
                     AppDatabase::class.java, "AppDatabase"
-                ).addCallback(AppDatabaseCallback(scope)).build()
+                ).addCallback(
+                    AppDatabaseCallback(
+                        scope
+                    )
+                ).build()
             }
 
             return DB_INSTANCE
