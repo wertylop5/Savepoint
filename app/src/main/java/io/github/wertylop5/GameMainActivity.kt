@@ -20,7 +20,7 @@ import io.github.wertylop5.model.EntryRepository
 import io.github.wertylop5.model.NoteEntry
 import kotlinx.coroutines.launch
 
-class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickListener {
+class GameMainActivity : AppCompatActivity() {
     private lateinit var entryList: MutableList<Entry>
     private var TAG: String = javaClass.simpleName
 
@@ -34,8 +34,9 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
 //        EXISTING_ENTRY = "$packageName.EXISTING_ENTRY"
 //    }
 
-    val addNewEntry = registerForActivityResult(CreateEntryContract()) {
-        val repository: EntryRepository  = EntryRepository(
+    private val addNewEntry = registerForActivityResult(CreateEntryContract()) {
+        //not saving this as a property so that it doesn't depend on activity state
+        val repository = EntryRepository(
             AppDatabase.getInstance(this, lifecycleScope).noteEntryDao())
 
         it?.let {
@@ -78,9 +79,5 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
 
     fun onGroupItemClick(item: MenuItem) {
 
-    }
-
-    override fun onEntryClick() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -5,12 +5,18 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.OnItemActivatedListener
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.EntryViewModel
 
 /**
@@ -22,7 +28,7 @@ import io.github.wertylop5.model.EntryViewModel
  * create an instance of this fragment.
  */
 class EntryListFragment : Fragment() {
-    private var entryClickListener: OnEntryClickListener? = null
+    //private var entryClickListener: OnEntryClickListener? = null
     private var TAG: String = EntryListFragment::class.java.name
 
     private lateinit var recyclerView: RecyclerView
@@ -31,13 +37,16 @@ class EntryListFragment : Fragment() {
 
     private lateinit var viewModel: EntryViewModel
 
+    private lateinit var tracker: SelectionTracker<Entry>
+    private var SELECTION_ID: String = "entryListSelectionTracker"
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        entryClickListener = context as? OnEntryClickListener
+        /*entryClickListener = context as? OnEntryClickListener
 
         if (entryClickListener == null) {
             throw ClassCastException("$context must implement OnItemClickListener")
-        }
+        }*/
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,11 +63,25 @@ class EntryListFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_entry_list, container, false)
 
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = EntryAdapter()
+        viewAdapter = EntryAdapter()//EntryAdapter(tracker)
         recyclerView = rootView.findViewById<RecyclerView>(R.id.main_recycler_view).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
+
+//            addOnItemTouchListener(object: RecyclerView.OnItemTouchListener {
+//                override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+//
+//                }
+//
+//                override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+//                    return true
+//                }
+//
+//                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+//                    TODO("Not yet implemented")
+//                }
+//            })
         }
 
         viewModel = ViewModelProvider(this).get(EntryViewModel::class.java)
@@ -69,6 +92,21 @@ class EntryListFragment : Fragment() {
             }
         })
 
+        tracker = SelectionTracker.Builder(SELECTION_ID,
+            recyclerView, EntryKeyProvider(recyclerView), EntryDetailsLookup(recyclerView),
+            StorageStrategy.createParcelableStorage(Entry::class.java)
+        ).withOnItemActivatedListener( object : OnItemActivatedListener<Entry> {
+            override fun onItemActivated(
+                item: ItemDetailsLookup.ItemDetails<Entry>,
+                e: MotionEvent
+            ): Boolean {
+                Log.d(TAG, "item activated")
+                return false
+            }
+        } ).build()
+
+        viewAdapter.tracker = tracker
+
         return rootView
     }
 
@@ -78,11 +116,7 @@ class EntryListFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-        entryClickListener = null
-    }
-
-    interface OnEntryClickListener {
-        fun onEntryClick()
+        //entryClickListener = null
     }
 
     companion object {
