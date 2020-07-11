@@ -9,12 +9,17 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.github.wertylop5.adapters.InfoAdapter
 import io.github.wertylop5.model.CreateEntryViewModel
 import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.Info
 import io.github.wertylop5.model.NoteEntry
+import io.github.wertylop5.recyclerViewUtil.InfoDetailsLookup
+import io.github.wertylop5.recyclerViewUtil.InfoKeyProvider
 
 class CreateEntryActivity : AppCompatActivity() {
     private val TAG: String = CreateEntryActivity::class.java.name
@@ -31,7 +36,11 @@ class CreateEntryActivity : AppCompatActivity() {
     private lateinit var defaultKeyString: String
     private lateinit var defaultValueString: String
 
+    private lateinit var tracker: SelectionTracker<Info>
+
     private var editEntry: Entry? = null
+
+    private val SELECTION_ID: String = "infoListSelectionTracker"
 
     companion object {
         lateinit var NEW_ENTRY: String;
@@ -80,6 +89,24 @@ class CreateEntryActivity : AppCompatActivity() {
 
         defaultKeyString = getString(R.string.default_info_key)
         defaultValueString = getString(R.string.default_info_value)
+
+        tracker = SelectionTracker.Builder(SELECTION_ID,
+            infoRecyclerView,
+            InfoKeyProvider(infoRecyclerView),
+            InfoDetailsLookup(infoRecyclerView),
+            StorageStrategy.createParcelableStorage(Info::class.java)
+        ).withOnItemActivatedListener{item, e ->
+            val infoItem = item.selectionKey
+            val message = when (infoItem) {
+                is Info -> infoItem.value
+                else -> ""
+            }
+
+            Log.d(TAG, message)
+            true
+        }.build()
+
+        infoAdapter.tracker = tracker
 
         findViewById<Button>(R.id.note_add_info_button).setOnClickListener {
             viewModel.insert(

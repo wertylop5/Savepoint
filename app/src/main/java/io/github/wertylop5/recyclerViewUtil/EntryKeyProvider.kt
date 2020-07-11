@@ -1,7 +1,8 @@
-package io.github.wertylop5
+package io.github.wertylop5.recyclerViewUtil
 
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.widget.RecyclerView
+import io.github.wertylop5.adapters.EntryAdapter
 import io.github.wertylop5.model.Entry
 
 class EntryKeyProvider(private val recyclerView: RecyclerView): ItemKeyProvider<Entry>(SCOPE_MAPPED) {

@@ -5,13 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.selection.OnItemActivatedListener
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.EntryViewModel
 import io.github.wertylop5.model.NoteEntry
+import io.github.wertylop5.adapters.EntryAdapter
+import io.github.wertylop5.recyclerViewUtil.EntryDetailsLookup
+import io.github.wertylop5.recyclerViewUtil.EntryKeyProvider
 
 /**
  * A simple [Fragment] subclass.
@@ -39,7 +39,7 @@ class EntryListFragment : Fragment() {
     private lateinit var viewModel: EntryViewModel
 
     private lateinit var tracker: SelectionTracker<Entry>
-    private var SELECTION_ID: String = "entryListSelectionTracker"
+    private val SELECTION_ID: String = "entryListSelectionTracker"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,7 +64,8 @@ class EntryListFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_entry_list, container, false)
 
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = EntryAdapter()//EntryAdapter(tracker)
+        viewAdapter =
+            EntryAdapter()//EntryAdapter(tracker)
         recyclerView = rootView.findViewById<RecyclerView>(R.id.main_recycler_view).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
@@ -94,7 +95,9 @@ class EntryListFragment : Fragment() {
         })
 
         tracker = SelectionTracker.Builder(SELECTION_ID,
-            recyclerView, EntryKeyProvider(recyclerView), EntryDetailsLookup(recyclerView),
+            recyclerView,
+            EntryKeyProvider(recyclerView),
+            EntryDetailsLookup(recyclerView),
             StorageStrategy.createParcelableStorage(Entry::class.java)
         ).withOnItemActivatedListener { item, e ->
             val entry = item.selectionKey

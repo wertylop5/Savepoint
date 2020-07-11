@@ -1,16 +1,15 @@
-package io.github.wertylop5
+package io.github.wertylop5.adapters
 
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
+import io.github.wertylop5.R
 import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.MilestoneEntryWithPhoto
 import io.github.wertylop5.model.NoteEntry
@@ -94,8 +93,10 @@ class EntryAdapter(/*private val tracker: SelectionTracker<Entry>*/)//,
         val entryImage = layout.findViewById<ImageView>(R.id.entry_image)
         val entryDescription = layout.findViewById<TextView>(R.id.entry_description)
 
-        return EntryViewHolder(layout, entryTitle, entryImage,
-            entryDescription, -1, null)
+        return EntryViewHolder(
+            layout, entryTitle, entryImage,
+            entryDescription, -1, null
+        )
     }
 
     fun setEntries(l: List<Entry>) {
