@@ -13,24 +13,37 @@ class CreateEntryContract: ActivityResultContract<Entry?, Entry?>() {
     override fun createIntent(context: Context, input: Entry?): Intent {
         return Intent(Intent.ACTION_INSERT_OR_EDIT).apply {
             if (input != null)
-                putExtra(GameMainActivity.EXISTING_ENTRY,
-                    EntryParcelableFactory.getEntryParcelable(input))
+//                putExtra(GameMainActivity.EXISTING_ENTRY,
+//                    EntryParcelableFactory.getEntryParcelable(input))
+                putExtra(GameMainActivity.EXISTING_ENTRY, input)
         }
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): Entry? {
         if (resultCode != Activity.RESULT_OK) return null
 
-        val parcelable = intent?.getParcelableExtra<Parcelable>(CreateEntryActivity.NEW_ENTRY)
-            ?: return null
+        var parcelable: Parcelable?
 
-        return when (parcelable) {
+        parcelable = intent?.getParcelableExtra(CreateEntryActivity.NEW_ENTRY)
+        when (parcelable) {
+            //TODO deprecate this
             is NoteEntryParcelable -> {
-                NoteEntry(parcelable.id, parcelable.title, parcelable.description)
+                return NoteEntry(parcelable.id, parcelable.title, parcelable.description)
             }
-            else -> {
-                null
+            is NoteEntry -> {
+                return NoteEntry(parcelable.noteEntryId, parcelable.title, parcelable.description)
             }
+            else -> {}
         }
+
+        parcelable = intent?.getParcelableExtra(GameMainActivity.EXISTING_ENTRY)
+        when (parcelable) {
+            is NoteEntry -> {
+                return NoteEntry(parcelable.noteEntryId, parcelable.title, parcelable.description)
+            }
+            else -> {}
+        }
+
+        return null
     }
 }

@@ -4,6 +4,7 @@ import android.os.Parcelable
 import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.NoteEntry
 
+//TODO deprecate this
 class EntryParcelableFactory {
     companion object {
         fun getEntryParcelable(entry: Entry): Parcelable {

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.EntryViewModel
+import io.github.wertylop5.model.NoteEntry
 
 /**
  * A simple [Fragment] subclass.
@@ -28,8 +29,8 @@ import io.github.wertylop5.model.EntryViewModel
  * create an instance of this fragment.
  */
 class EntryListFragment : Fragment() {
-    //private var entryClickListener: OnEntryClickListener? = null
-    private var TAG: String = EntryListFragment::class.java.name
+    private var entryClickListener: OnEntryClickListener? = null
+    private val TAG: String = EntryListFragment::class.java.name
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -42,11 +43,11 @@ class EntryListFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        /*entryClickListener = context as? OnEntryClickListener
+        entryClickListener = context as? OnEntryClickListener
 
         if (entryClickListener == null) {
             throw ClassCastException("$context must implement OnItemClickListener")
-        }*/
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,15 +96,18 @@ class EntryListFragment : Fragment() {
         tracker = SelectionTracker.Builder(SELECTION_ID,
             recyclerView, EntryKeyProvider(recyclerView), EntryDetailsLookup(recyclerView),
             StorageStrategy.createParcelableStorage(Entry::class.java)
-        ).withOnItemActivatedListener( object : OnItemActivatedListener<Entry> {
-            override fun onItemActivated(
-                item: ItemDetailsLookup.ItemDetails<Entry>,
-                e: MotionEvent
-            ): Boolean {
-                Log.d(TAG, "item activated")
-                return false
+        ).withOnItemActivatedListener { item, e ->
+            val entry = item.selectionKey
+            val message = when (entry) {
+                is NoteEntry -> entry.description
+                else -> ""
             }
-        } ).build()
+
+            Log.d(TAG, message)
+            entryClickListener?.onEntryClick(entry)
+
+            true
+        }.build()
 
         viewAdapter.tracker = tracker
 
@@ -117,6 +121,10 @@ class EntryListFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         //entryClickListener = null
+    }
+
+    interface OnEntryClickListener {
+        fun onEntryClick(entry: Entry?)
     }
 
     companion object {

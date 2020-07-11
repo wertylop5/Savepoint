@@ -21,11 +21,14 @@ interface NoteEntryDao {
     fun getSummary(): List<NoteEntrySummary>
 
     //using suspend cuz they're slow?
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNoteEntry(entry: NoteEntry)
 
     @Insert
     suspend fun insertNoteEntries(entries: List<NoteEntry>)
+
+    @Update
+    fun updateNoteEntry(entry: NoteEntry)
 
     @Query("DELETE FROM NoteEntry")
     suspend fun deleteAll()

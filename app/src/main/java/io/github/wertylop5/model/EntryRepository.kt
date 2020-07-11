@@ -8,4 +8,8 @@ class EntryRepository(private val dao: NoteEntryDao) {
     suspend fun insert(note: NoteEntry) {
         dao.insertNoteEntry(note)
     }
+
+    fun update(note: NoteEntry) {
+        dao.updateNoteEntry(note)
+    }
 }

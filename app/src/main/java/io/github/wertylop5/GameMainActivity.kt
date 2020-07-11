@@ -20,7 +20,7 @@ import io.github.wertylop5.model.EntryRepository
 import io.github.wertylop5.model.NoteEntry
 import kotlinx.coroutines.launch
 
-class GameMainActivity : AppCompatActivity() {
+class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickListener {
     private lateinit var entryList: MutableList<Entry>
     private var TAG: String = javaClass.simpleName
 
@@ -79,5 +79,10 @@ class GameMainActivity : AppCompatActivity() {
 
     fun onGroupItemClick(item: MenuItem) {
 
+    }
+
+    override fun onEntryClick(entry: Entry?) {
+        Log.d(TAG, "main activity got $entry")
+        addNewEntry.launch(entry)
     }
 }

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.wertylop5.model.CreateEntryViewModel
+import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.Info
 import io.github.wertylop5.model.NoteEntry
 
@@ -29,6 +30,8 @@ class CreateEntryActivity : AppCompatActivity() {
 
     private lateinit var defaultKeyString: String
     private lateinit var defaultValueString: String
+
+    private var editEntry: Entry? = null
 
     companion object {
         lateinit var NEW_ENTRY: String;
@@ -61,6 +64,20 @@ class CreateEntryActivity : AppCompatActivity() {
             }
         })
 
+        if (intent.hasExtra(GameMainActivity.EXISTING_ENTRY)) {
+            editEntry = intent.getParcelableExtra(GameMainActivity.EXISTING_ENTRY)
+
+            titleText.setText( when (editEntry) {
+                is NoteEntry -> (editEntry as NoteEntry).title ?: ""
+                else -> ""
+            } )
+
+            descText.setText( when (editEntry) {
+                is NoteEntry -> (editEntry as NoteEntry).description
+                else -> ""
+            } )
+        }
+
         defaultKeyString = getString(R.string.default_info_key)
         defaultValueString = getString(R.string.default_info_value)
 
@@ -78,11 +95,19 @@ class CreateEntryActivity : AppCompatActivity() {
             val desc: String = descText.text.toString()
             val info: MutableList<Info>? = viewModel.listOfInfo.value
 
-            val newNote: NoteEntry =
-                NoteEntry(
+            val newNote: NoteEntry
+
+            when (editEntry) {
+                is NoteEntry -> newNote = NoteEntry(
+                    noteEntryId = (editEntry as NoteEntry).noteEntryId,
                     title = title,
                     description = desc
                 )
+                else -> newNote = NoteEntry(
+                    title = title,
+                    description = desc
+                )
+            }
 
             val intent = Intent()
             intent.putExtra(NEW_ENTRY,
