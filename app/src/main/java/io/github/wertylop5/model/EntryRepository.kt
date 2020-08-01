@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 class EntryRepository(private val dao: NoteEntryDao) {
     val noteEntries: LiveData<List<NoteEntry>> = dao.getAllNoInfo()
 
-    suspend fun insert(note: NoteEntry) {
-        dao.insertNoteEntry(note)
+    suspend fun insertNoteEntry(entry: NoteEntry) {
+        dao.insertNoteEntry(entry)
     }
 
     fun update(note: NoteEntry) {

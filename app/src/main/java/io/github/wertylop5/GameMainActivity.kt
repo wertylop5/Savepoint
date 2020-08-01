@@ -1,6 +1,5 @@
 package io.github.wertylop5
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,10 +13,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import io.github.wertylop5.model.AppDatabase
-import io.github.wertylop5.model.Entry
-import io.github.wertylop5.model.EntryRepository
-import io.github.wertylop5.model.NoteEntry
+import io.github.wertylop5.model.*
 import kotlinx.coroutines.launch
 
 class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickListener {
@@ -36,14 +32,21 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
 
     private val addNewEntry = registerForActivityResult(CreateEntryContract()) {
         //not saving this as a property so that it doesn't depend on activity state
-        val repository = EntryRepository(
+        val entryRepository = EntryRepository(
             AppDatabase.getInstance(this, lifecycleScope).noteEntryDao())
+        val infoRepository = InfoRepository(
+            AppDatabase.getInstance(this, lifecycleScope).infoDao()
+        )
 
         it?.let {
             Log.d(TAG, "adding new entry to db")
             when (it) {
                 is NoteEntry -> lifecycleScope.launch {
-                    repository.insert(it)
+                    entryRepository.insertNoteEntry(it)
+                }
+                is NoteEntryWithInfo -> lifecycleScope.launch {
+                    entryRepository.insertNoteEntry(it.noteEntry)
+                    infoRepository.insertInfoItems(it.info)
                 }
                 else -> null
             }

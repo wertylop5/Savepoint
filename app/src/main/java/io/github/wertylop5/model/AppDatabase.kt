@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
     version = 1)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun noteEntryDao(): NoteEntryDao
+    abstract fun infoDao(): InfoDao
 
     private class AppDatabaseCallback(
         private val scope: CoroutineScope
@@ -51,6 +52,9 @@ abstract class AppDatabase: RoomDatabase() {
         //scope is needed to launch coroutines
         fun getInstance(context: Context, scope: CoroutineScope): AppDatabase {
             if (!this::DB_INSTANCE.isInitialized) {
+                //TODO: remove when in prod
+                context.applicationContext.deleteDatabase("AppDatabase")
+
                 DB_INSTANCE = Room.databaseBuilder(
                     context,
                     AppDatabase::class.java, "AppDatabase"
@@ -58,7 +62,8 @@ abstract class AppDatabase: RoomDatabase() {
                     AppDatabaseCallback(
                         scope
                     )
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
             }
 
             return DB_INSTANCE

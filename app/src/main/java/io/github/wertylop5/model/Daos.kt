@@ -24,12 +24,30 @@ interface NoteEntryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNoteEntry(entry: NoteEntry)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNoteEntries(entries: List<NoteEntry>)
 
     @Update
     fun updateNoteEntry(entry: NoteEntry)
 
     @Query("DELETE FROM NoteEntry")
+    suspend fun deleteAll()
+}
+
+@Dao
+interface InfoDao {
+    @Query("SELECT * FROM Info")
+    fun getAll(): LiveData<List<Info>>
+
+    @Query("SELECT * FROM Info WHERE noteId = :entryId")
+    fun getInfoFromEntryId(entryId: Int): LiveData<List<Info>>
+
+    @Insert
+    suspend fun insertInfoItem(info: Info)
+
+    @Insert
+    suspend fun insertInfoItems(infos: List<Info>)
+
+    @Query("DELETE FROM Info")
     suspend fun deleteAll()
 }

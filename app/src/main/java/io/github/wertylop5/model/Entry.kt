@@ -11,11 +11,13 @@ abstract class Entry: Parcelable
 
 @Entity
 data class Info(
-    @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
+    @PrimaryKey(autoGenerate = true) val infoId: Int = 0,
+    var noteId: Int,
     val key: String,
     val value: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readInt(),
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readString() ?: ""
@@ -23,6 +25,7 @@ data class Info(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(infoId)
         parcel.writeInt(noteId)
         parcel.writeString(key)
         parcel.writeString(value)

@@ -8,6 +8,7 @@ import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
 import io.github.wertylop5.model.Entry
 import io.github.wertylop5.model.NoteEntry
+import io.github.wertylop5.model.NoteEntryWithInfo
 
 class CreateEntryContract: ActivityResultContract<Entry?, Entry?>() {
     override fun createIntent(context: Context, input: Entry?): Intent {
@@ -33,6 +34,9 @@ class CreateEntryContract: ActivityResultContract<Entry?, Entry?>() {
             is NoteEntry -> {
                 return NoteEntry(parcelable.noteEntryId, parcelable.title, parcelable.description)
             }
+            is NoteEntryWithInfo -> {
+                return NoteEntryWithInfo(parcelable.noteEntry, parcelable.info)
+            }
             else -> {}
         }
 
@@ -40,6 +44,9 @@ class CreateEntryContract: ActivityResultContract<Entry?, Entry?>() {
         when (parcelable) {
             is NoteEntry -> {
                 return NoteEntry(parcelable.noteEntryId, parcelable.title, parcelable.description)
+            }
+            is NoteEntryWithInfo -> {
+                return NoteEntryWithInfo(parcelable.noteEntry, parcelable.info)
             }
             else -> {}
         }

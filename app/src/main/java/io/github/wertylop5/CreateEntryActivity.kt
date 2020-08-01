@@ -14,10 +14,7 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.wertylop5.adapters.InfoAdapter
-import io.github.wertylop5.model.CreateEntryViewModel
-import io.github.wertylop5.model.Entry
-import io.github.wertylop5.model.Info
-import io.github.wertylop5.model.NoteEntry
+import io.github.wertylop5.model.*
 import io.github.wertylop5.recyclerViewUtil.InfoDetailsLookup
 import io.github.wertylop5.recyclerViewUtil.InfoKeyProvider
 
@@ -50,6 +47,34 @@ class CreateEntryActivity : AppCompatActivity() {
         NEW_ENTRY = "NEW_ENTRY"
     }
 
+    private fun generateNewNoteEntry(
+        title: String, desc: String, noteId: Int? = null): NoteEntry {
+        val newNoteEntry: NoteEntry
+
+        if (noteId != null) {
+            newNoteEntry = NoteEntry(
+                noteEntryId = noteId,
+                title = title,
+                description = desc
+            )
+        }
+        else {
+            newNoteEntry = NoteEntry(
+                title = title,
+                description = desc
+            )
+        }
+
+        return newNoteEntry
+    }
+
+    private fun generateNewNoteEntryWithInfo(
+        noteEntry: NoteEntry, info: List<Info>): NoteEntryWithInfo {
+        val res: NoteEntryWithInfo
+
+        return NoteEntryWithInfo(noteEntry, info)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_note)
@@ -57,22 +82,27 @@ class CreateEntryActivity : AppCompatActivity() {
         titleText = findViewById(R.id.create_note_title_edittext)
         descText = findViewById(R.id.create_note_desc_edittext)
 
-        infoAdapter = InfoAdapter()
         viewManager = LinearLayoutManager(this)
+
+        //setup info list
+        infoAdapter = InfoAdapter()
         infoRecyclerView = findViewById<RecyclerView>(R.id.info_recycler_view).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             this.adapter = infoAdapter
         }
 
+        //setup viewmodel
         viewModel = ViewModelProvider(this).get(CreateEntryViewModel::class.java)
         viewModel.listOfInfo.observe(this, Observer {
             it?.let {
+                Log.d(TAG, it.toString())
                 Log.d(TAG, it.size.toString())
                 infoAdapter.setInfoElems(it)
             }
         })
 
+        //handle edit entry setup
         if (intent.hasExtra(GameMainActivity.EXISTING_ENTRY)) {
             editEntry = intent.getParcelableExtra(GameMainActivity.EXISTING_ENTRY)
 
@@ -85,6 +115,10 @@ class CreateEntryActivity : AppCompatActivity() {
                 is NoteEntry -> (editEntry as NoteEntry).description
                 else -> ""
             } )
+
+            if (editEntry != null && editEntry is NoteEntry) {
+                viewModel.getInfoFromEntryId((editEntry as NoteEntry).noteEntryId)
+            }
         }
 
         defaultKeyString = getString(R.string.default_info_key)
@@ -111,6 +145,7 @@ class CreateEntryActivity : AppCompatActivity() {
         findViewById<Button>(R.id.note_add_info_button).setOnClickListener {
             viewModel.insert(
                 Info(
+                    noteId = if (editEntry != null && editEntry is NoteEntry) (editEntry as NoteEntry).noteEntryId else -1,
                     key = defaultKeyString,
                     value = defaultValueString
                 )
@@ -120,27 +155,50 @@ class CreateEntryActivity : AppCompatActivity() {
         findViewById<Button>(R.id.note_create_button).setOnClickListener {
             val title: String = titleText.text.toString()
             val desc: String = descText.text.toString()
-            val info: MutableList<Info>? = viewModel.listOfInfo.value
+            val info: List<Info>? = viewModel.listOfInfo.value
 
             val newNote: NoteEntry
-
-            when (editEntry) {
-                is NoteEntry -> newNote = NoteEntry(
-                    noteEntryId = (editEntry as NoteEntry).noteEntryId,
-                    title = title,
-                    description = desc
-                )
-                else -> newNote = NoteEntry(
-                    title = title,
-                    description = desc
-                )
+//
+//            when (editEntry) {
+//                is NoteEntry -> newNote = NoteEntry(
+//                    noteEntryId = (editEntry as NoteEntry).noteEntryId,
+//                    title = title,
+//                    description = desc
+//                )
+//                else -> newNote = NoteEntry(
+//                    title = title,
+//                    description = desc
+//                )
+//            }
+            newNote = when (editEntry) {
+                is NoteEntry -> generateNewNoteEntry(
+                    title, desc, (editEntry as NoteEntry).noteEntryId)
+                else -> generateNewNoteEntry(title, desc)
             }
 
             val intent = Intent()
-            intent.putExtra(NEW_ENTRY,
-                EntryParcelableFactory.getEntryParcelable(newNote))
+            if (info == null) {
+                intent.putExtra(
+                    if (editEntry != null) GameMainActivity.EXISTING_ENTRY else NEW_ENTRY,
+                    newNote)
+            }
+            else {
+                info.forEach {
+                    it.noteId = newNote.noteEntryId
+                }
+
+                val res = generateNewNoteEntryWithInfo(newNote, info)
+                intent.putExtra(
+                    if (editEntry != null) GameMainActivity.EXISTING_ENTRY else NEW_ENTRY,
+                    res)
+            }
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel
     }
 }

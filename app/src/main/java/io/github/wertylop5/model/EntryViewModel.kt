@@ -18,6 +18,6 @@ class EntryViewModel(application: Application): AndroidViewModel(application) {
     }
 
     fun insert(note: NoteEntry) = viewModelScope.launch {
-        repository.insert(note)
+        repository.insertNoteEntry(note)
     }
 }
