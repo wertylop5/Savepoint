@@ -69,7 +69,7 @@ class CreateEntryActivity : AppCompatActivity() {
     }
 
     private fun generateNewNoteEntryWithInfo(
-        noteEntry: NoteEntry, info: List<Info>): NoteEntryWithInfo {
+        noteEntry: NoteEntry, info: MutableList<Info>): NoteEntryWithInfo {
         val res: NoteEntryWithInfo
 
         return NoteEntryWithInfo(noteEntry, info)
@@ -92,16 +92,6 @@ class CreateEntryActivity : AppCompatActivity() {
             this.adapter = infoAdapter
         }
 
-        //setup viewmodel
-        viewModel = ViewModelProvider(this).get(CreateEntryViewModel::class.java)
-        viewModel.listOfInfo.observe(this, Observer {
-            it?.let {
-                Log.d(TAG, it.toString())
-                Log.d(TAG, it.size.toString())
-                infoAdapter.setInfoElems(it)
-            }
-        })
-
         //handle edit entry setup
         if (intent.hasExtra(GameMainActivity.EXISTING_ENTRY)) {
             editEntry = intent.getParcelableExtra(GameMainActivity.EXISTING_ENTRY)
@@ -116,10 +106,32 @@ class CreateEntryActivity : AppCompatActivity() {
                 else -> ""
             } )
 
-            if (editEntry != null && editEntry is NoteEntry) {
-                viewModel.getInfoFromEntryId((editEntry as NoteEntry).noteEntryId)
-            }
+//            if (editEntry != null && editEntry is NoteEntry) {
+//                Log.d(TAG, "getting existing info")
+//                viewModel.getInfoFromEntryId((editEntry as NoteEntry).noteEntryId)
+//            }
         }
+
+        //setup viewmodel
+        viewModel = ViewModelProvider(this).get(CreateEntryViewModel::class.java)
+        viewModel.clearTempInfo()
+        viewModel.refreshData(when (editEntry) {
+            is NoteEntry -> (editEntry as NoteEntry).noteEntryId
+            else -> CreateEntryViewModel.REFRESH_NO_EXISTING_ENTRY
+        })
+        infoAdapter.setInfoElems(viewModel.listOfInfoToAdd)
+
+        viewModel.listOfInfo.observe(this, Observer {
+            Log.d(TAG, "info list changed")
+
+            if (viewModel.shouldDisplayInfoFromDb) {
+                it?.let {
+                    Log.d(TAG, it.toString())
+                    Log.d(TAG, it.size.toString())
+                    infoAdapter.setInfoElems(it)
+                }
+            }
+        })
 
         defaultKeyString = getString(R.string.default_info_key)
         defaultValueString = getString(R.string.default_info_value)
@@ -139,37 +151,27 @@ class CreateEntryActivity : AppCompatActivity() {
             Log.d(TAG, message)
             true
         }.build()
-
         infoAdapter.tracker = tracker
 
         findViewById<Button>(R.id.note_add_info_button).setOnClickListener {
-            viewModel.insert(
-                Info(
-                    noteId = if (editEntry != null && editEntry is NoteEntry) (editEntry as NoteEntry).noteEntryId else -1,
-                    key = defaultKeyString,
-                    value = defaultValueString
-                )
+            val newInfo = Info(
+                noteId = if (editEntry != null && editEntry is NoteEntry) (editEntry as NoteEntry).noteEntryId else -1,
+                key = defaultKeyString,
+                value = defaultValueString
             )
+            viewModel.insert(newInfo)
+            infoAdapter.insertInfoElem(newInfo)
         }
 
         findViewById<Button>(R.id.note_create_button).setOnClickListener {
             val title: String = titleText.text.toString()
             val desc: String = descText.text.toString()
-            val info: List<Info>? = viewModel.listOfInfo.value
+            val info: MutableList<Info> = ArrayList()
+            info.addAll(viewModel.listOfInfoToAdd)
+            info.addAll(viewModel.listOfInfo.value ?: emptyList())
 
             val newNote: NoteEntry
-//
-//            when (editEntry) {
-//                is NoteEntry -> newNote = NoteEntry(
-//                    noteEntryId = (editEntry as NoteEntry).noteEntryId,
-//                    title = title,
-//                    description = desc
-//                )
-//                else -> newNote = NoteEntry(
-//                    title = title,
-//                    description = desc
-//                )
-//            }
+
             newNote = when (editEntry) {
                 is NoteEntry -> generateNewNoteEntry(
                     title, desc, (editEntry as NoteEntry).noteEntryId)
@@ -177,12 +179,13 @@ class CreateEntryActivity : AppCompatActivity() {
             }
 
             val intent = Intent()
-            if (info == null) {
+            if (info.size == 0) {
                 intent.putExtra(
                     if (editEntry != null) GameMainActivity.EXISTING_ENTRY else NEW_ENTRY,
                     newNote)
             }
             else {
+                // created entry id is now known, so set all info elements to the id
                 info.forEach {
                     it.noteId = newNote.noteEntryId
                 }
@@ -195,10 +198,5 @@ class CreateEntryActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel
     }
 }

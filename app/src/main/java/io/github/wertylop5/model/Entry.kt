@@ -121,7 +121,7 @@ data class NoteEntryWithInfo(
         parentColumn = "noteEntryId",
         entityColumn = "noteId"
     )
-    val info: List<Info>
+    val info: MutableList<Info>
 ) : Entry() {
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(NoteEntry::class.java.classLoader)!!,

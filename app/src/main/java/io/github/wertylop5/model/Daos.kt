@@ -1,6 +1,7 @@
 package io.github.wertylop5.model
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 
 data class NoteEntrySummary(
@@ -37,16 +38,16 @@ interface NoteEntryDao {
 @Dao
 interface InfoDao {
     @Query("SELECT * FROM Info")
-    fun getAll(): LiveData<List<Info>>
+    fun getAll(): LiveData<MutableList<Info>>
 
     @Query("SELECT * FROM Info WHERE noteId = :entryId")
-    fun getInfoFromEntryId(entryId: Int): LiveData<List<Info>>
+    fun getInfoFromEntryId(entryId: Int): LiveData<MutableList<Info>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertInfoItem(info: Info)
 
-    @Insert
-    suspend fun insertInfoItems(infos: List<Info>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInfoItems(infos: List<Info>): List<Long>
 
     @Query("DELETE FROM Info")
     suspend fun deleteAll()

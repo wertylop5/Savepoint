@@ -7,21 +7,41 @@ import kotlinx.coroutines.launch
 
 //TODO: store a list of info in the db already and a separate list of temp info's being created
 class CreateEntryViewModel(application: Application): AndroidViewModel(application) {
+    companion object {
+        val REFRESH_NO_EXISTING_ENTRY = -1
+    }
+
     private val TAG: String = CreateEntryViewModel::class.java.name
 
     private val repository: InfoRepository
-    var listOfInfo: LiveData<List<Info>>
+    var listOfInfo: LiveData<MutableList<Info>>
+        private set
+    var shouldDisplayInfoFromDb = false
         private set
 
-    var listOfInfoToAdd: MutableList<Info> = ArrayList()
+    val listOfInfoToAdd: MutableList<Info> = ArrayList()
 
     init {
         val infoDao = AppDatabase.getInstance(application, viewModelScope).infoDao()
         repository = InfoRepository(infoDao)
+
         listOfInfo = repository.infoItems
     }
 
-    fun insert(i: Info) = viewModelScope.launch {
+    fun refreshData(entryId: Int = REFRESH_NO_EXISTING_ENTRY) {
+        shouldDisplayInfoFromDb = when(entryId) {
+            REFRESH_NO_EXISTING_ENTRY -> {
+                false
+            }
+            else -> {
+                repository.getInfoFromEntryId(entryId)
+                listOfInfo = repository.infoItems
+                true
+            }
+        }
+    }
+
+    fun insert(i: Info)/* = viewModelScope.launch*/ {
 //        listOfInfo.value.let {getInfoFromEntryId
 //            Log.d(TAG, "inserting info into viewmodel")
 //
@@ -36,19 +56,19 @@ class CreateEntryViewModel(application: Application): AndroidViewModel(applicati
 //
 //        Log.d(TAG, "inserting info into viewmodel")
 //        Log.d(TAG, listOfInfo.value?.size.toString())
-        repository.insertInfo(i)
-    }
-
-    fun insertCreatedInfo() = viewModelScope.launch {
-        repository.insertInfoItems(listOfInfoToAdd)
-        listOfInfoToAdd.clear()
+        listOfInfoToAdd.add(i)
     }
 
     fun getInfoFromEntryId(entryId: Int) {
-        /*listOfInfo = */repository.getInfoFromEntryId(entryId)
+        repository.getInfoFromEntryId(entryId)
+        //listOfInfo.value = repository.infoItems.value ?: ArrayList()
+        listOfInfo = repository.infoItems
     }
 
-    fun addInfoToCreate(i: Info) {
-        listOfInfoToAdd.add(i)
+    /**
+     * Flushes all info elems not already in the database
+     * */
+    fun clearTempInfo() {
+        listOfInfoToAdd.clear()
     }
 }

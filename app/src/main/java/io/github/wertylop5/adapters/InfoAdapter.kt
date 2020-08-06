@@ -11,7 +11,7 @@ import io.github.wertylop5.R
 import io.github.wertylop5.model.Info
 
 class InfoAdapter: RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
-    var infoElems: List<Info> = emptyList()
+    var infoElems: MutableList<Info> = ArrayList()
         private set
 
     lateinit var tracker: SelectionTracker<Info>
@@ -66,7 +66,13 @@ class InfoAdapter: RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
     }
 
     fun setInfoElems(l: List<Info>) {
-        infoElems = l
+        infoElems.addAll(infoElems.size, l)
+
+        notifyDataSetChanged()
+    }
+
+    fun insertInfoElem(i: Info) {
+        infoElems.add(i)
 
         notifyDataSetChanged()
     }
