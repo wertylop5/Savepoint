@@ -13,6 +13,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.leinardi.android.speeddial.SpeedDialActionItem
+import com.leinardi.android.speeddial.SpeedDialView
 import io.github.wertylop5.model.*
 import kotlinx.coroutines.launch
 
@@ -20,15 +22,9 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
     private lateinit var entryList: MutableList<Entry>
     private var TAG: String = javaClass.simpleName
 
-
     companion object {
         var EXISTING_ENTRY: String = "io.github.wertylop5.EXISTING_ENTRY"
     }
-
-    //have to split it, otherwise packageName property is not accessible
-//    init {
-//        EXISTING_ENTRY = "$packageName.EXISTING_ENTRY"
-//    }
 
     private val addNewEntry = registerForActivityResult(CreateEntryContract()) {
         //not saving this as a property so that it doesn't depend on activity state
@@ -77,11 +73,22 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
         findViewById<NavigationView>(R.id.navigation_view)
             .setupWithNavController(navController)
 
-        val fab: FloatingActionButton = findViewById(R.id.add_entry_button)
-        fab.setOnClickListener { view ->
-            //val intent = Intent(this, CreateEntryActivity::class.java)
-            addNewEntry.launch(null)
-        }
+        val speedDialView = findViewById<SpeedDialView>(R.id.speedDial)
+        speedDialView.addActionItem(
+            //first id is just an id resource, second id is the icon to use
+            SpeedDialActionItem.Builder(R.id.fab_add_note_entry, R.drawable.ic_baseline_add_24)
+                .setLabel(getString(R.string.fab_label_add_note_entry))
+                .create())
+        speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
+            when (actionItem.id) {
+                R.id.fab_add_note_entry -> {
+                    addNewEntry.launch(null)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+            }
+            false
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
