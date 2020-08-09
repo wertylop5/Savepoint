@@ -31,6 +31,8 @@ class CreateEntryViewModel(application: Application): AndroidViewModel(applicati
     fun refreshData(entryId: Int = REFRESH_NO_EXISTING_ENTRY) {
         shouldDisplayInfoFromDb = when(entryId) {
             REFRESH_NO_EXISTING_ENTRY -> {
+                repository.getInfoFromEntryId(-1)
+                listOfInfo = repository.infoItems
                 false
             }
             else -> {

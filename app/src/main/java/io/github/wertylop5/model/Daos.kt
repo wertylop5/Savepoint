@@ -21,9 +21,12 @@ interface NoteEntryDao {
     @Query("SELECT title, description FROM NoteEntry")
     fun getSummary(): List<NoteEntrySummary>
 
+    @Query("SELECT * FROM NoteEntry WHERE rowid = :id")
+    suspend fun getNoteEntryByRowid(id: Long): List<NoteEntry>
+
     //using suspend cuz they're slow?
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNoteEntry(entry: NoteEntry)
+    suspend fun insertNoteEntry(entry: NoteEntry): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNoteEntries(entries: List<NoteEntry>)

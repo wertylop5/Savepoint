@@ -45,7 +45,17 @@ class GameMainActivity : AppCompatActivity(), EntryListFragment.OnEntryClickList
                     entryRepository.insertNoteEntry(it)
                 }
                 is NoteEntryWithInfo -> lifecycleScope.launch {
-                    entryRepository.insertNoteEntry(it.noteEntry)
+                    val rowid = entryRepository.insertNoteEntry(it.noteEntry)
+
+                    Log.d(TAG, rowid.toString())
+
+                    //now get the new id for the NoteEntry
+                    val newNoteEntry = entryRepository.getNoteEntryByRowid(rowid)
+
+                    it.info.forEach {
+                        it.noteId = newNoteEntry.noteEntryId
+                    }
+
                     infoRepository.insertInfoItems(it.info)
                 }
                 else -> null

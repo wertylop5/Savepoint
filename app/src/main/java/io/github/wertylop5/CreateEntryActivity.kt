@@ -185,7 +185,7 @@ class CreateEntryActivity : AppCompatActivity() {
                     newNote)
             }
             else {
-                // created entry id is now known, so set all info elements to the id
+                // TODO: move info noteId setting into GameMainACtivity after entry insertion
                 info.forEach {
                     it.noteId = newNote.noteEntryId
                 }
